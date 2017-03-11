@@ -8,6 +8,7 @@
 import scrapy
 
 class NewsItem(scrapy.Item):
+    md5 = scrapy.Field()
     url = scrapy.Field()
     source = scrapy.Field()
     title = scrapy.Field()
@@ -15,3 +16,4 @@ class NewsItem(scrapy.Item):
     time = scrapy.Field()
     content = scrapy.Field()
     types = scrapy.Field()
+    newsType = scrapy.Field()
