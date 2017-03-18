@@ -13,3 +13,12 @@ CREATE TABLE `news_ifeng` (
   `types` VARCHAR(20)
 )ENGINE=innodb DEFAULT CHARSET=utf8;
 
+CREATE TABLE `news_netease`(
+  `url` VARCHAR(120) PRIMARY KEY,
+  `source` VARCHAR(30),
+  `title` VARCHAR(100) NOT NULL,
+  `time` VARCHAR(30),
+  `content` TEXT NOT NULL,
+  `types` VARCHAR(20)
+)ENGINE=innodb DEFAULT CHARSET=utf8;
+

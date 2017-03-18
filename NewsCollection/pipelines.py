@@ -19,9 +19,8 @@ class RemoveEmptyPipeline(object):
             item['source'] = u"未知"
         if item['time'] is None:
             item['time'] = u"未知"
-        if item['types'] is None:
-            item['types'] = u"未知"
         log.msg("passing RemoveEmptyPipeline:%s" % item['url'], level=log.INFO)
+
         return item
 
 class DuplicatePipeline(object):
@@ -33,11 +32,11 @@ class DuplicatePipeline(object):
 
     def process_item(self, item, spider):
         if item['url'] in self.urls_seen:
-            log.msg("Duplicate item url:%s"%item['url'], level=log.WARNING)
+            log.msg("Duplicate item url:%s" % item['url'], level=log.WARNING)
             raise DropItem("Duplicate item found, url is: %s" % item['url'])
         else:
             self.urls_seen.add(item['url'])
-            log.msg("passing DuplicatePipeline:%s"%item['url'], level=log.INFO)
+            log.msg("passing DuplicatePipeline:%s" % item['url'], level=log.INFO)
             return item
 
 
@@ -50,41 +49,34 @@ class DBWriterPipeline(object):
     user = "root"
     passwd = "root"
     database = "news"
-    sql_fetch = 'select * from `%s` where `url`= "%s"'
-
-    sql_insert = 'insert into `%s` (`url`, `source`, `title`, `time`, `content`, `types`) values ("%s", "%s", "%s", "%s", "%s", "%s")'
+    # sql_fetch = 'select * from `%s` where `url`= "%s"'
 
     def process_item(self, item, spider):
-        db = MySQLdb.connect(DBWriterPipeline.host,
-                             DBWriterPipeline.user,
-                             DBWriterPipeline.passwd,
-                             DBWriterPipeline.database)
-        cursor = db.cursor()
+        cursor = self.conn.cursor()
         # add this or the chinese words would be wrong in Mysql
-        cursor.execute("SET NAMES utf8")
+        # cursor.execute("SET NAMES utf8")
         table = item['newsType']
+        sql_insert = """insert into """ + table + """(`url`, `source`, `title`,
+                    `time`, `content`, `types`) values (%s, %s, %s, %s, %s, %s)"""
         try:
-            cursor.execute(self.sql_insert % (table, item['url'].encode('utf-8'),
-                                              item['source'].encode('utf-8'),item['title'].encode('utf-8'),
-                                              item['time'].encode('utf-8'),item['content'].encode('utf-8'),
-                                              item['types'].encode('utf-8')))
-            db.commit()
-            log.msg("commit url: %s"%item['url'], level=log.INFO)
-        except:
-            db.rollback()
+            cursor.execute(sql_insert, (item['url'], item['source'],
+                                        item['title'], item['time'],
+                                        item['content'], item['types']))
+            self.conn.commit()
+            log.msg("successfully commit url: %s" % item['url'], level=log.INFO)
+        except MySQLdb.Error, e:
+            print "MySQLdb.Error %d: %s" % (e.args[0], e.args[1])
+            self.conn.rollback()
             log.msg("except for DBWriterPipeline", level=log.WARNING)
         finally:
-            db.close()
-            log.msg("passing DBWriterPipeline:%s" % item['url'], level=log.INFO)
+            log.msg("passing DBWriterPipeline, content len=%d"%len(item['content']), level=log.INFO)
+            # return item
 
+    def open_spider(self, spider):
+        log.msg("call open_spider...", level=log.INFO)
+        self.conn = MySQLdb.connect(user='root', passwd='root', db='news',
+                                    host='localhost', charset='utf8', use_unicode=True)
 
-    # def open_spider(self, spider):
-    #     self.db = MySQLdb.connect(DBWriterPipeline.host,
-    #                               DBWriterPipeline.user,
-    #                               DBWriterPipeline.passwd,
-    #                               DBWriterPipeline.database)
-    #     log.msg("call open_spider...", level=log.INFO)
-    #
-    # def close_spider(self, spider):
-    #     log.msg("call close_spider...", level=log.INFO)
-    #     self.db.close()
+    def close_spider(self, spider):
+        log.msg("call close_spider...", level=log.INFO)
+        self.conn.close()
