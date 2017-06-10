@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>新闻聚合</title>
+  <link rel="stylesheet" type="text/css" th:href="@{bootstrap/css/bootstrap.min.css}"/>
+  <!-- Material Design fonts -->
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700"/>
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons"/>
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+
+  <!-- Bootstrap Material Design -->
+  <link rel="stylesheet" type="text/css" th:href="@{bsm/css/bootstrap-material-design.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{bsm/css/ripples.min.css}"/>
+
+  <link rel="stylesheet" type="text/css" th:href="@{css/type.css}"/>
+
+</head>
+<body>
+   <div class="navbar navbar-fixed-top navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="javascript:void(0)">新闻聚合</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="index">首页</a></li>
+          <li class="dropdown">
+            <a href="bootstrap-elements.html" data-target="#" class="dropdown-toggle" data-toggle="dropdown">用户
+              <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a type="button" class="btn btn-primary" data-toggle="modal" data-target="#loginModal">登陆/注册</a></li>
+              <li><a type="button" class="btn btn-primary" id="settings">个人设置</a></li>
+              <li class="divider"></li>
+              <li><a type="button" class="btn btn-primary" id="logout">登出</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   <!-- Modal login/register-->
+   <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+     <div class="modal-dialog" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+           <h4 class="modal-title" id="myModalLabel">用户登录/注册</h4>
+         </div>
+         <div class="modal-body">
+           <form class="form-horizontal">
+             <fieldset>
+
+               <div class="form-group">
+                 <div class="col-md-offset-2 col-md-10">
+                   <div class="togglebutton">
+                     <label>
+                       <input type="checkbox" id="switchLR" /> 我没有账号，进行注册
+                     </label>
+                   </div>
+                 </div>
+               </div>
+
+               <div class="form-group registerInput" hidden="hidden">
+                 <label for="registerEmail" class="col-md-2 control-label">Email</label>
+                 <div class="col-md-10">
+                   <input type="email" class="form-control" id="registerEmail" placeholder="Email"/>
+                 </div>
+               </div>
+
+               <div class="form-group registerInput" hidden="hidden">
+                 <label for="registerUsername" class="col-md-2 control-label">Username</label>
+                 <div class="col-md-10">
+                   <input type="text" class="form-control" id="registerUsername" placeholder="UserName"/>
+                 </div>
+               </div>
+
+               <div class="form-group registerInput" hidden="hidden">
+                 <label for="registerPwd" class="col-md-2 control-label">Password</label>
+                 <div class="col-md-10">
+                   <input type="password" class="form-control" id="registerPwd" placeholder="Password"/>
+                 </div>
+               </div>
+
+               <div class="form-group registerInput" hidden="hidden">
+                 <label for="registerPwd2" class="col-md-2 control-label">Confirm Password</label>
+                 <div class="col-md-10">
+                   <input type="password" class="form-control" id="registerPwd2" placeholder="Password Again"/>
+                 </div>
+               </div>
+
+
+               <div class="form-group loginInput">
+                 <label for="loginUsername" class="col-md-2 control-label">Username</label>
+                 <div class="col-md-10">
+                   <input type="text" class="form-control" id="loginUsername" placeholder="UserName"/>
+                 </div>
+               </div>
+
+               <div class="form-group loginInput">
+                 <label for="loginPwd" class="col-md-2 control-label">Password</label>
+                 <div class="col-md-10">
+                   <input type="password" class="form-control" id="loginPwd" placeholder="Password"/>
+                 </div>
+               </div>
+
+             </fieldset>
+           </form>
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+           <button type="button" class="btn btn-primary" id="loginOrRegisterBtn">提交</button>
+         </div>
+       </div>
+     </div>
+   </div>
+
+   <!-- Modal type set-->
+   <div class="modal fade" id="setFavorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabe2">
+     <div class="modal-dialog" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+           <h4 class="modal-title" id="myModalLabe2">管理感兴趣的栏目</h4>
+         </div>
+         <div class="modal-body">
+           <div class="row" id="favors">
+             <!--<button type="button" class="btn btn-success active">-->
+               <!--类别1-->
+             <!--</button>-->
+             <!--<button type="button" class="btn btn-default" >-->
+               <!--类别2-->
+             <!--</button>-->
+             <!--<button type="button" class="btn btn-info" >-->
+               <!--类别3-->
+             <!--</button>-->
+
+           </div>
+
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+         </div>
+       </div>
+     </div>
+   </div>
+
+
+   <!--&lt;!&ndash; Large modal &ndash;&gt;-->
+   <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">Large modal</button>-->
+
+   <!-- Modal -->
+   <div class="modal fade bs-example-modal-lg" id="contentModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+     <div class="modal-dialog modal-lg" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+           <h4 class="modal-title" id="myLargeModalLabel">News Title</h4>
+         </div>
+         <div class="modal-body">
+           <div>
+             <span id="nsource" class="label label-default"></span>
+             <span id="ntype" class="label label-primary"></span>
+             <span id="ntime"></span>
+             <span id="nclick"></span>
+             <a id="nurl" href="">查看源网址</a>
+           </div>
+           <div id="newsContent">
+
+           </div>
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         </div>
+       </div>
+     </div>
+   </div>
+
+   <!--点击按钮弹出类别栏目-->
+   <div id="actionButton" class="btn btn-primary btn-fab">
+       <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+   </div>
+
+   <div class="container-fluid">
+     <div class="row" id="typeList" hidden="hidden">
+       <div class="btn-group-vertical" id="hotTypeList">
+         <!-- AJAX method to get data-->
+       </div>
+      </div>
+    </div>
+
+
+  <div class="container">
+
+    <div class="row">
+      <div class="col-xs-12 col-sm-12">
+        <div class="jumbotron">
+          <h1 id="userTip">Hello, world!</h1>
+          <p>欢迎来到新闻聚合平台，在这里你可以浏览各种类型的热点新闻资讯.</p>
+        </div>
+      </div>
+    </div>
+    <div class="row" id="hotNews">
+      <!--ajax to get content-->
+    </div>
+
+    <hr/>
+
+    <ul class="pager">
+      <li class="previous disabled"><a href="javascript:void(0)" id="previous">← 上一页</a></li>
+      <li class="next"><a class="withripple" href="javascript:void(0)" id="next">下一页 →</a></li>
+    </ul>
+
+    <footer>
+      <p>&copy; ZJU 2017</p>
+    </footer>
+  </div>
+
+  <script th:src="@{jquery/jquery-1.12.4.min.js}"></script>
+  <script th:src="@{bootstrap/js/bootstrap.min.js}"></script>
+  <script th:src="@{bsm/js/material.min.js}"></script>
+  <script th:src="@{bsm/js/ripples.min.js}"></script>
+   <script th:src="@{js/type.js}"></script>
+   <script th:src="@{js/service.js}"></script>
+   <script>
+      $.material.init();
+  </script>
+</body>
+</html>
